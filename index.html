@@ -34,7 +34,7 @@
     </button>
 
     <button onclick="checkAnswer('avoid')">
-        Successed
+        Succeed
     </button>
 
     <button onclick="checkAnswer('watch')">
@@ -50,14 +50,14 @@
 
         function checkAnswer(answer) {
 
-            if (answer === "participate") {
+            if (answer === "succeed") {
                 document.getElementById("feedback").innerText =
-                    "Correct! Well done!";
+                    "굳!";
             }
 
             else {
                 document.getElementById("feedback").innerText =
-                    "Incorrect. The answer is Participate in.";
+                    "뭐함? 틀림 ㅉ";
             }
 
         }
