@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>English Pronunciation App</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 180px;
+            padding: 18px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 18px;
+            resize: vertical;
+            outline: none;
+            background: white;
+        }
+
+        textarea:focus {
+            border-color: #777;
+        }
+
+        .voice-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .voice-card {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .flag {
+            font-size: 35px;
+            margin-bottom: 8px;
+        }
+
+        .voice-card h2 {
+            margin: 5px 0 10px;
+            font-size: 20px;
+        }
+
+        .voice-card p {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            background: #333;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #555;
+        }
+
+        .stop-button {
+            margin-top: 15px;
+            background: #ddd;
+            color: #333;
+        }
+
+        .stop-button:hover {
+            background: #bbb;
+        }
+
+        .notice {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 10px;
+            color: #666;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 600px) {
+            .voice-container {
+                flex-direction: column;
+            }
+
+            body {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>English Pronunciation</h1>
+
+    <p class="description">
+        Enter an English sentence and listen to it in different accents.
+    </p>
+
+    <textarea
+        id="textInput"
+        placeholder="Type an English sentence here..."
+    ></textarea>
+
+    <div class="voice-container">
+
+        <!-- American Accent -->
+        <div class="voice-card">
+            <div class="flag">🇺🇸</div>
+
+            <h2>American English</h2>
+
+            <p>American accent</p>
+
+            <button onclick="speakText('american')">
+                🔊 Listen
+            </button>
+        </div>
+
+        <!-- British Accent -->
+        <div class="voice-card">
+            <div class="flag">🇬🇧</div>
+
+            <h2>British English</h2>
+
+            <p>British accent</p>
+
+            <button onclick="speakText('british')">
+                🔊 Listen
+            </button>
+        </div>
+
+    </div>
+
+    <button class="stop-button" onclick="stopSpeech()">
+        ■ Stop
+    </button>
+
+    <div class="notice">
+        <strong>Tip:</strong> Enter an English sentence above and choose
+        either American English or British English to hear the pronunciation.
+    </div>
+
+</div>
+
+
+<script>
+
+    // Get available voices from the browser
+    let voices = [];
+
+    function loadVoices() {
+        voices = speechSynthesis.getVoices();
+    }
+
+    speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+
+    // Speak the entered text
+    function speakText(accent) {
+
+        const text = document.getElementById("textInput").value.trim();
+
+        // Check if the user entered anything
+        if (text === "") {
+            alert("Please enter some English text first.");
+            return;
+        }
+
+        // Stop any previous speech
+        speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+
+        // Find a suitable voice
+        let selectedVoice = null;
+
+        if (accent === "american") {
+
+            // Prefer US English voices
+            selectedVoice = voices.find(voice =>
+                voice.lang === "en-US"
+            );
+
+            // If exact match isn't available
+            if (!selectedVoice) {
+                selectedVoice = voices.find(voice =>
+                    voice.lang.startsWith("en-US")
+                );
+            }
+
+            utterance.lang = "en-US";
+
+        } else if (accent === "british") {
+
+            // Prefer British English voices
+            selectedVoice = voices.find(voice =>
+                voice.lang === "en-GB"
+            );
+
+            // If exact match isn't available
+            if (!selectedVoice) {
+                selectedVoice = voices.find(voice =>
+                    voice.lang.startsWith("en-GB")
+                );
+            }
+
+            utterance.lang = "en-GB";
+        }
+
+        // Apply the selected voice
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
+        }
+
+        // Speech settings
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+
+        // Speak
+        speechSynthesis.speak(utterance);
+    }
+
+
+    // Stop speaking
+    function stopSpeech() {
+        speechSynthesis.cancel();
+    }
+
+</script>
+
+</body>
+</html>
